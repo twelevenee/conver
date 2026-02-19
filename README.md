@@ -4,7 +4,7 @@
 
 ![Demo screenshot placeholder](https://placehold.co/800x420/f5f0e8/c4694f?text=Conversation+Repair+Coach)
 
-**[Live Demo →](https://your-username.github.io/conversation-repair-coach)**
+**[Live Demo →](https://splendid-mandazi-0d4f63.netlify.app)**
 
 ---
 
