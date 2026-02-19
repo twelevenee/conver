@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repair — Conversation Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── Design Tokens ────────────────────────────────── */
+  :root {
+    --cream: #f5f0e8;
+    --warm-white: #faf8f4;
+    --terracotta: #c4694f;
+    --terracotta-light: #e8896e;
+    --sage: #7a9e87;
+    --charcoal: #2c2825;
+    --mid: #6b6460;
+    --light: #b8afa8;
+    --card: #ffffff;
+    --warning: #d4813a;
+    --warning-bg: #fdf0e3;
+    --purple: #9b8ecf;
+    --purple-bg: #f7f4fd;
+    --blue: #5b8ec4;
+    --blue-bg: #f0f5fb;
+    --pink: #c45b7a;
+    --pink-bg: #fdf0f4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(196,105,79,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(122,158,135,0.08) 0%, transparent 50%);
+  }
+
+  /* ── Header ───────────────────────────────────────── */
+  header {
+    text-align: center;
+    padding: 3rem 1.5rem 1.5rem;
+  }
+
+  .logo-line {
+    font-family: 'Lora', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1.1;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  h1 em { font-style: italic; color: var(--terracotta); }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: var(--mid);
+    margin-top: 0.75rem;
+    font-weight: 300;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.35s;
+  }
+
+  /* ── App-mode switcher ────────────────────────────── */
+  .app-mode-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.25rem 0 0.25rem;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards 0.45s;
+  }
+
+  .app-mode-btn {
+    padding: 0.55rem 1.3rem;
+    border-radius: 999px;
+    border: 1.5px solid #e0d9d0;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .app-mode-btn:hover { border-color: var(--terracotta-light); color: var(--terracotta); }
+
+  .app-mode-btn.active {
+    background: var(--charcoal);
+    border-color: var(--charcoal);
+    color: white;
+    font-weight: 500;
+  }
+
+  .app-mode-btn.active.couples {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--pink) 100%);
+    border-color: transparent;
+  }
+
+  /* ── Main layout ──────────────────────────────────── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 5rem;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 2px 12px rgba(44,40,37,0.06), 0 1px 3px rgba(44,40,37,0.04);
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards 0.55s;
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--light);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+
+  /* ── Tabs ─────────────────────────────────────────── */
+  .mode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    border: 1.5px solid #e8e2d9;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    color: var(--mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab:hover { border-color: var(--terracotta-light); color: var(--terracotta); }
+
+  .tab.active {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+    color: white;
+    font-weight: 500;
+  }
+
+  /* ── Couples layout ───────────────────────────────── */
+  .couples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 580px) { .couples-grid { grid-template-columns: 1fr; } }
+
+  .person-panel {
+    border-radius: 14px;
+    padding: 1.25rem;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .person-panel.you { background: var(--blue-bg); border-color: #c2d8ef; }
+  .person-panel.them { background: var(--pink-bg); border-color: #efcad8; }
+
+  .person-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .person-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .you .person-dot { background: var(--blue); }
+  .them .person-dot { background: var(--pink); }
+
+  .person-name-input {
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    width: 100%;
+    outline: none;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 2px;
+  }
+
+  /* ── Textarea ─────────────────────────────────────── */
+  textarea {
+    width: 100%;
+    border: 1.5px solid #e8e2d9;
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--charcoal);
+    background: var(--warm-white);
+    resize: vertical;
+    min-height: 120px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .person-panel textarea {
+    background: white;
+    border-color: transparent;
+    min-height: 100px;
+  }
+
+  .you textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(91,142,196,0.12); }
+  .them textarea:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(196,91,122,0.12); }
+
+  textarea::placeholder { color: var(--light); }
+  textarea:focus { border-color: var(--terracotta-light); box-shadow: 0 0 0 3px rgba(196,105,79,0.1); }
+
+  /* ── Buttons ──────────────────────────────────────── */
+  .analyze-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--terracotta);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  .analyze-btn.couples-btn {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--pink) 100%);
+  }
+
+  .analyze-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(196,105,79,0.3);
+    filter: brightness(1.05);
+  }
+
+  .analyze-btn:active { transform: translateY(0); }
+
+  .analyze-btn:disabled {
+    background: var(--light) !important;
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
+    filter: none;
+  }
+
+  .tip {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--light);
+    font-style: italic;
+    font-family: 'Lora', serif;
+    margin-top: 0.6rem;
+  }
+
+  /* ── Results: shared ──────────────────────────────── */
+  #results { display: none; }
+  #results.visible { display: block; animation: fadeUp 0.5s ease forwards; }
+
+  .results-title {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    color: var(--charcoal);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e8e2d9;
+  }
+
+  .results-title em { font-style: italic; color: var(--terracotta); }
+
+  /* ── Couples results ──────────────────────────────── */
+  .couples-results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 600px) { .couples-results-grid { grid-template-columns: 1fr; } }
+
+  .person-results {
+    border-radius: 14px;
+    padding: 1.25rem;
+  }
+
+  .person-results.you { background: var(--blue-bg); border: 1.5px solid #c2d8ef; }
+  .person-results.them { background: var(--pink-bg); border: 1.5px solid #efcad8; }
+
+  .person-results-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .you .person-results-header { color: var(--blue); }
+  .them .person-results-header { color: var(--pink); }
+
+  /* ── Shared result blocks ─────────────────────────── */
+  .flags-section {
+    background: var(--warning-bg);
+    border: 1.5px solid #f0c99a;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .flags-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .flags-header .dot { width: 8px; height: 8px; background: var(--warning); border-radius: 50%; }
+  .flags-header span { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--warning); font-weight: 500; }
+
+  .flag-item {
+    background: white;
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    border-left: 3px solid var(--warning);
+  }
+
+  .flag-item:last-child { margin-bottom: 0; }
+  .flag-phrase { font-family: 'Lora', serif; font-style: italic; color: var(--charcoal); font-weight: 600; }
+  .flag-reason { color: var(--mid); margin-top: 0.2rem; font-size: 0.83rem; }
+
+  .nvc-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 2px 12px rgba(44,40,37,0.05);
+    border-top: 3px solid var(--purple);
+  }
+
+  .nvc-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+
+  .nvc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  @media (max-width: 500px) { .nvc-grid { grid-template-columns: 1fr; } }
+
+  .nvc-block { background: var(--purple-bg); border-radius: 8px; padding: 0.75rem 0.9rem; }
+  .nvc-block-label { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--purple); font-weight: 500; margin-bottom: 0.3rem; }
+  .nvc-block-text { font-size: 0.88rem; color: var(--charcoal); line-height: 1.5; }
+
+  .rewrite-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 2px 12px rgba(44,40,37,0.06);
+    border-top: 3px solid var(--sage);
+  }
+
+  .rewrite-label { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--sage); font-weight: 500; margin-bottom: 0.5rem; }
+  .rewrite-title { font-family: 'Lora', serif; font-size: 1.05rem; color: var(--charcoal); margin-bottom: 0.2rem; }
+  .rewrite-desc { font-size: 0.8rem; color: var(--light); margin-bottom: 1rem; }
+
+  .rewrite-text {
+    background: #f0f6f2;
+    border-radius: 10px;
+    padding: 1.1rem 1.2rem;
+    font-size: 0.91rem;
+    line-height: 1.7;
+    color: var(--charcoal);
+    white-space: pre-wrap;
+    position: relative;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.7rem;
+    background: white;
+    border: 1px solid #d8ece0;
+    border-radius: 6px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    color: var(--sage);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover { background: var(--sage); color: white; }
+
+  /* ── Couples-only: insight card ───────────────────── */
+  .insight-card {
+    background: linear-gradient(135deg, #eef4fb 0%, #fdf0f4 100%);
+    border: 1.5px solid #e0cce8;
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .insight-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: #8a6eb0;
+    margin-bottom: 0.75rem;
+  }
+
+  .insight-title {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    color: var(--charcoal);
+    margin-bottom: 0.75rem;
+  }
+
+  .insight-body {
+    font-size: 0.9rem;
+    color: var(--mid);
+    line-height: 1.7;
+  }
+
+  .shared-needs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .need-tag {
+    background: white;
+    border: 1px solid #d4c0e8;
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    color: #8a6eb0;
+  }
+
+  /* ── Misc ─────────────────────────────────────────── */
+  .loading {
+    text-align: center;
+    padding: 2.5rem;
+    color: var(--mid);
+    font-style: italic;
+    font-family: 'Lora', serif;
+  }
+
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.4s infinite;
+  }
+
+  .divider {
+    text-align: center;
+    color: var(--light);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    margin: 0.5rem 0 1.25rem;
+  }
+
+  .error-msg {
+    background: #fef0f0;
+    border: 1px solid #f5c5c5;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: #c0392b;
+    font-size: 0.88rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-gap { margin-top: 2rem; }
+
+  /* ── Mini NVC for couples view ───────────────────── */
+  .mini-nvc { margin-top: 0.75rem; }
+
+  .mini-nvc-row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+    margin-bottom: 0.4rem;
+    font-size: 0.83rem;
+  }
+
+  .mini-nvc-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding-top: 2px;
+    min-width: 72px;
+    flex-shrink: 0;
+  }
+
+  .you .mini-nvc-label { color: var(--blue); }
+  .them .mini-nvc-label { color: var(--pink); }
+
+  .mini-nvc-val { color: var(--charcoal); line-height: 1.5; }
+
+  .mini-flags { margin-top: 0.75rem; }
+
+  .mini-flag {
+    background: white;
+    border-radius: 6px;
+    padding: 0.45rem 0.7rem;
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+    border-left: 2px solid var(--warning);
+    color: var(--mid);
+  }
+
+  .mini-flag strong { font-style: italic; color: var(--charcoal); font-family: 'Lora', serif; }
+
+  /* ── Animations ───────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="logo-line">Conversation Repair Coach</p>
+  <h1>Say it with <em>care</em></h1>
+  <p class="subtitle">Paste your message or a thread. Get it rewritten with empathy, flagged for patterns that push people away.</p>
+
+  <div class="app-mode-bar">
+    <button class="app-mode-btn active" id="soloModeBtn" onclick="setAppMode('solo')">Solo mode</button>
+    <button class="app-mode-btn couples" id="couplesModeBtn" onclick="setAppMode('couples')">💞 Couples mode</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── SOLO MODE ─────────────────────────────────── -->
+  <div id="soloPanel">
+    <div class="card">
+      <p class="card-label">What are you pasting?</p>
+      <div class="mode-tabs">
+        <button class="tab active" onclick="setMode('draft', this)">My draft reply</button>
+        <button class="tab" onclick="setMode('thread', this)">Full thread</button>
+      </div>
+      <textarea id="soloInput" placeholder="e.g. 'You always shut down when I try to talk about this. It's like you don't even care anymore...'" rows="6"></textarea>
+      <p class="tip">Be honest — this is just between you and the app.</p>
+      <button class="analyze-btn" onclick="analyzeSolo()" id="soloBtn">✦ Help me say this better</button>
+    </div>
+  </div>
+
+  <!-- ── COUPLES MODE ───────────────────────────────── -->
+  <div id="couplesPanel" style="display:none;">
+    <div class="card">
+      <p class="card-label">Each person pastes their message</p>
+      <div class="couples-grid">
+        <div class="person-panel you">
+          <div class="person-header">
+            <div class="person-dot"></div>
+            <input class="person-name-input" id="youName" value="You" placeholder="Your name" />
+          </div>
+          <textarea id="youInput" placeholder="Paste your message or draft here..."></textarea>
+        </div>
+        <div class="person-panel them">
+          <div class="person-header">
+            <div class="person-dot"></div>
+            <input class="person-name-input" id="themName" value="Partner" placeholder="Partner's name" />
+          </div>
+          <textarea id="themInput" placeholder="Paste their message here..."></textarea>
+        </div>
+      </div>
+      <p class="tip">Both perspectives analyzed separately, then compared together.</p>
+      <button class="analyze-btn couples-btn" onclick="analyzeCouples()" id="couplesBtn">💞 Analyze both sides</button>
+    </div>
+  </div>
+
+  <div id="results"></div>
+</main>
+
+<script>
+/* ──────────────────────────────────────────────────────
+   State
+────────────────────────────────────────────────────── */
+let appMode = 'solo';
+let inputMode = 'draft';
+
+const SYSTEM_PROMPT = `You are a compassionate communication coach specializing in Nonviolent Communication (NVC) and relationship repair, with extra sensitivity for long-distance relationships.
+
+Analyze the provided message(s) and return ONLY valid JSON — no markdown, no preamble.`;
+
+/* ──────────────────────────────────────────────────────
+   Mode switching
+────────────────────────────────────────────────────── */
+function setAppMode(mode) {
+  appMode = mode;
+  document.getElementById('soloPanel').style.display = mode === 'solo' ? 'block' : 'none';
+  document.getElementById('couplesPanel').style.display = mode === 'couples' ? 'block' : 'none';
+  document.getElementById('results').className = '';
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('soloModeBtn').classList.toggle('active', mode === 'solo');
+  document.getElementById('couplesModeBtn').classList.toggle('active', mode === 'couples');
+}
+
+function setMode(mode, el) {
+  inputMode = mode;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('soloInput').placeholder = mode === 'draft'
+    ? "e.g. 'You always shut down when I try to talk about this...'"
+    : "Paste the full thread here, including both sides...";
+}
+
+/* ──────────────────────────────────────────────────────
+   API helper
+────────────────────────────────────────────────────── */
+async function callClaude(userPrompt) {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: userPrompt }]
+    })
+  });
+  const data = await response.json();
+  const raw = data.content.map(b => b.text || '').join('');
+  return JSON.parse(raw.replace(/```json|```/g, '').trim());
+}
+
+/* ──────────────────────────────────────────────────────
+   Solo mode
+────────────────────────────────────────────────────── */
+async function analyzeSolo() {
+  const text = document.getElementById('soloInput').value.trim();
+  if (!text) return;
+
+  const btn = document.getElementById('soloBtn');
+  const results = document.getElementById('results');
+  btn.disabled = true;
+  btn.textContent = 'Reading between the lines...';
+  results.className = 'visible';
+  results.innerHTML = `<div class="loading">Analyzing your words<span class="loading-dots"></span></div>`;
+
+  const prompt = `Mode: ${inputMode === 'thread' ? 'Full conversation thread' : 'Draft reply'}
+
+Content:
+${text}
+
+Return JSON with exactly this shape:
+{
+  "flags": [{ "phrase": "exact phrase", "reason": "explanation of the harmful pattern" }],
+  "nvc": { "observation": "...", "feeling": "...", "need": "...", "request": "..." },
+  "rewrites": [
+    { "style": "Direct but gentle", "description": "Clear and honest without defensiveness", "text": "..." },
+    { "style": "Vulnerable & open", "description": "Leads with feelings and needs, invites connection", "text": "..." },
+    { "style": "De-escalating", "description": "Slows things down, reduces friction", "text": "..." }
+  ]
+}
+
+Flags: catch "you always/never", blame, contempt, mind-reading, stonewalling. Empty array if none.
+Rewrites must sound like a real person — not robotic or saccharine.
+Return ONLY JSON.`;
+
+  try {
+    const data = await callClaude(prompt);
+    renderSoloResults(data);
+  } catch (e) {
+    results.innerHTML = `<div class="error-msg">Something went wrong. Please try again.</div>`;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '✦ Analyze again';
+}
+
+/* ──────────────────────────────────────────────────────
+   Couples mode
+────────────────────────────────────────────────────── */
+async function analyzeCouples() {
+  const youText = document.getElementById('youInput').value.trim();
+  const themText = document.getElementById('themInput').value.trim();
+  const youName = document.getElementById('youName').value.trim() || 'You';
+  const themName = document.getElementById('themName').value.trim() || 'Partner';
+
+  if (!youText && !themText) return;
+
+  const btn = document.getElementById('couplesBtn');
+  const results = document.getElementById('results');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing both sides...';
+  results.className = 'visible';
+  results.innerHTML = `<div class="loading">Reading between the lines for both of you<span class="loading-dots"></span></div>`;
+
+  const prompt = `You are analyzing a couple's messages side by side.
+
+Person A name: "${youName}"
+Person A message:
+${youText || '(no message provided)'}
+
+Person B name: "${themName}"
+Person B message:
+${themText || '(no message provided)'}
+
+Return JSON with exactly this shape:
+{
+  "you": {
+    "flags": [{ "phrase": "...", "reason": "..." }],
+    "nvc": { "observation": "...", "feeling": "...", "need": "...", "request": "..." },
+    "top_rewrite": { "style": "Most empathetic version", "text": "..." }
+  },
+  "them": {
+    "flags": [{ "phrase": "...", "reason": "..." }],
+    "nvc": { "observation": "...", "feeling": "...", "need": "...", "request": "..." },
+    "top_rewrite": { "style": "Most empathetic version", "text": "..." }
+  },
+  "insight": {
+    "title": "One-line summary of the dynamic at play",
+    "body": "2-3 sentences: what's really happening beneath both messages, written with compassion for both people",
+    "shared_needs": ["need1", "need2", "need3"],
+    "bridge": "One specific thing both people could do or say right now to move toward each other"
+  }
+}
+
+Be warm, specific, and avoid generic relationship-advice clichés.
+Return ONLY JSON.`;
+
+  try {
+    const data = await callClaude(prompt);
+    renderCouplesResults(data, youName, themName);
+  } catch (e) {
+    results.innerHTML = `<div class="error-msg">Something went wrong. Please try again.</div>`;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '💞 Analyze again';
+}
+
+/* ──────────────────────────────────────────────────────
+   Render: Solo
+────────────────────────────────────────────────────── */
+function renderSoloResults(data) {
+  const results = document.getElementById('results');
+  let html = '';
+
+  // Flags
+  if (data.flags?.length > 0) {
+    html += `<div class="flags-section"><div class="flags-header"><div class="dot"></div><span>Patterns to watch</span></div>`;
+    data.flags.forEach(f => {
+      html += `<div class="flag-item"><div class="flag-phrase">"${esc(f.phrase)}"</div><div class="flag-reason">${esc(f.reason)}</div></div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="flags-section" style="border-color:#b8e0c2;background:#f0faf4">
+      <div class="flags-header"><div class="dot" style="background:#4caf7d"></div><span style="color:#4caf7d">No major patterns flagged</span></div>
+      <p style="font-size:0.88rem;color:var(--mid)">Your language looks clean. The rewrites below will add warmth and clarity.</p>
+    </div>`;
+  }
+
+  // NVC
+  if (data.nvc) {
+    const n = data.nvc;
+    html += `<div class="nvc-card"><div class="nvc-label">NVC Breakdown — what's really going on</div>
+      <div class="nvc-grid">
+        <div class="nvc-block"><div class="nvc-block-label">Observation</div><div class="nvc-block-text">${esc(n.observation)}</div></div>
+        <div class="nvc-block"><div class="nvc-block-label">Feeling</div><div class="nvc-block-text">${esc(n.feeling)}</div></div>
+        <div class="nvc-block"><div class="nvc-block-label">Need</div><div class="nvc-block-text">${esc(n.need)}</div></div>
+        <div class="nvc-block"><div class="nvc-block-label">Request</div><div class="nvc-block-text">${esc(n.request)}</div></div>
+      </div></div>`;
+  }
+
+  html += `<div class="divider">— rewrites —</div>`;
+
+  data.rewrites?.forEach((r, i) => {
+    const id = `rw-${i}`;
+    html += `<div class="rewrite-card">
+      <div class="rewrite-label">Option ${i + 1}</div>
+      <div class="rewrite-title">${esc(r.style)}</div>
+      <div class="rewrite-desc">${esc(r.description)}</div>
+      <div class="rewrite-text" id="${id}">${esc(r.text)}<button class="copy-btn" onclick="copyText('${id}')">Copy</button></div>
+    </div>`;
+  });
+
+  results.innerHTML = html;
+  results.className = 'visible';
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ──────────────────────────────────────────────────────
+   Render: Couples
+────────────────────────────────────────────────────── */
+function renderCouplesResults(data, youName, themName) {
+  const results = document.getElementById('results');
+  let html = '';
+
+  // Side-by-side panels
+  html += `<div class="couples-results-grid">`;
+  html += renderPersonPanel(data.you, youName, 'you', 'you-rw');
+  html += renderPersonPanel(data.them, themName, 'them', 'them-rw');
+  html += `</div>`;
+
+  // Shared insight
+  if (data.insight) {
+    const ins = data.insight;
+    html += `<div class="insight-card">
+      <div class="insight-label">💞 Couples Insight</div>
+      <div class="insight-title">${esc(ins.title)}</div>
+      <div class="insight-body">${esc(ins.body)}</div>`;
+
+    if (ins.shared_needs?.length) {
+      html += `<div class="shared-needs">`;
+      ins.shared_needs.forEach(n => { html += `<span class="need-tag">${esc(n)}</span>`; });
+      html += `</div>`;
+    }
+
+    if (ins.bridge) {
+      html += `<div style="margin-top:1rem;padding:0.9rem 1.1rem;background:white;border-radius:10px;border-left:3px solid #c4a0d8;">
+        <div style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#8a6eb0;font-weight:500;margin-bottom:0.35rem;">One thing to try</div>
+        <div style="font-size:0.9rem;color:var(--charcoal);line-height:1.6;">${esc(ins.bridge)}</div>
+      </div>`;
+    }
+
+    html += `</div>`;
+  }
+
+  results.innerHTML = html;
+  results.className = 'visible';
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderPersonPanel(person, name, cls, rwId) {
+  if (!person) return '';
+  let html = `<div class="person-results ${cls}">
+    <div class="person-results-header"><div class="person-dot" style="width:8px;height:8px;border-radius:50%;background:${cls==='you'?'var(--blue)':'var(--pink)'};margin-right:4px;"></div>${esc(name)}</div>`;
+
+  // Flags
+  if (person.flags?.length) {
+    html += `<div class="mini-flags">`;
+    person.flags.forEach(f => {
+      html += `<div class="mini-flag"><strong>"${esc(f.phrase)}"</strong><br>${esc(f.reason)}</div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="mini-flag" style="border-color:#4caf7d;color:#4caf7d;">✓ No harmful patterns flagged</div>`;
+  }
+
+  // Mini NVC
+  if (person.nvc) {
+    const n = person.nvc;
+    html += `<div class="mini-nvc">
+      <div class="mini-nvc-row"><span class="mini-nvc-label">Feeling</span><span class="mini-nvc-val">${esc(n.feeling)}</span></div>
+      <div class="mini-nvc-row"><span class="mini-nvc-label">Need</span><span class="mini-nvc-val">${esc(n.need)}</span></div>
+      <div class="mini-nvc-row"><span class="mini-nvc-label">Request</span><span class="mini-nvc-val">${esc(n.request)}</span></div>
+    </div>`;
+  }
+
+  // Top rewrite
+  if (person.top_rewrite) {
+    html += `<div style="margin-top:0.9rem;">
+      <div style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--sage);font-weight:500;margin-bottom:0.4rem;">Suggested rewrite</div>
+      <div class="rewrite-text" id="${rwId}" style="background:white;font-size:0.86rem;">${esc(person.top_rewrite.text)}<button class="copy-btn" onclick="copyText('${rwId}')">Copy</button></div>
+    </div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+/* ──────────────────────────────────────────────────────
+   Helpers
+────────────────────────────────────────────────────── */
+function copyText(id) {
+  const el = document.getElementById(id);
+  const text = el.innerText.replace('Copy', '').replace('Copied!', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// Escape HTML to prevent XSS from API responses
+function esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
