@@ -155,4 +155,4 @@ MIT — use it, fork it, build on it.
 
 ## Author
 
-Built by [your name](https://github.com/your-username) as a personal project for navigating long-distance relationship communication. Inspired by NVC and the general human difficulty of saying hard things kindly.
+Built by [Jey Kim](https://github.com/twelevenee) as a personal project for navigating long-distance relationship communication. Inspired by NVC and the general human difficulty of saying hard things kindly.
