@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #f5f0e8;
+  --color-warm-white: #faf8f4;
+  --color-terracotta: #c4694f;
+  --color-terracotta-light: #e8896e;
+  --color-sage: #7a9e87;
+  --color-charcoal: #2c2825;
+  --color-mid: #6b6460;
+  --color-light: #b8afa8;
+  --color-card: #ffffff;
+  --color-warning: #d4813a;
+  --color-warning-bg: #fdf0e3;
+  --color-purple: #9b8ecf;
+  --color-purple-bg: #f7f4fd;
+  --color-blue: #5b8ec4;
+  --color-blue-bg: #f0f5fb;
+  --color-pink: #c45b7a;
+  --color-pink-bg: #fdf0f4;
+
+  --font-lora: 'Lora', Georgia, serif;
+  --font-dm-sans: 'DM Sans', system-ui, sans-serif;
+
+  --shadow-card: 0 2px 12px rgba(44,40,37,0.06), 0 1px 3px rgba(44,40,37,0.04);
+  --shadow-nvc: 0 2px 12px rgba(44,40,37,0.05);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dots {
+  0%, 20%  { content: '.'; }
+  40%      { content: '..'; }
+  60%, 100%{ content: '...'; }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.4s infinite;
+}
+
+/* Multi-radial background — not achievable with a single Tailwind utility */
+.bg-app {
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(ellipse at 10% 20%, rgba(196,105,79,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(122,158,135,0.08) 0%, transparent 50%);
+}

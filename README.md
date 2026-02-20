@@ -2,9 +2,16 @@
 
 > A mini NLP web app that helps you say hard things with care — especially useful in long-distance relationships.
 
-![Demo screenshot placeholder](https://placehold.co/800x420/f5f0e8/c4694f?text=Conversation+Repair+Coach)
+---
 
-**[Live Demo →](https://your-username.github.io/conversation-repair-coach)**
+## This repo contains two versions
+
+| | Version | Description |
+|---|---|---|
+| **v1** | [`index.html`](./index.html) | Single-file prototype — zero dependencies, entire app in one HTML file |
+| **v2** | [`conversation-repair-coach/`](./conversation-repair-coach) | Full-stack Next.js app — secure server-side API key, TypeScript, component architecture |
+
+The prototype was built first to validate the idea quickly. The Next.js version addresses the main limitation of v1: the Anthropic API key was exposed in client-side code. In v2, all API calls happen server-side via a Route Handler — the key never appears in the browser bundle or network requests.
 
 ---
 
